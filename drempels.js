@@ -29,11 +29,15 @@ varying vec2 v_texCoord;
 void main() {
     vec2 uv = v_texCoord;
 
-    // Distort UV coordinates
-    float wave = sin(uv.y * 10.0 + u_time) * 0.02;
+    // Add panning effect
+    uv.x += sin(u_time * 0.1) * 0.1; // Horizontal panning
+    uv.y += cos(u_time * 0.1) * 0.1; // Vertical panning
+
+    // Distort UV coordinates with randomization
+    float wave = sin(uv.y * 10.0 + u_time) * 0.02 + cos(uv.x * 15.0 + u_time * 0.5) * 0.01;
     uv.x += wave;
 
-    wave = cos(uv.x * 10.0 + u_time) * 0.02;
+    wave = cos(uv.x * 10.0 + u_time) * 0.02 + sin(uv.y * 15.0 + u_time * 0.5) * 0.01;
     uv.y += wave;
 
     // Sample the image with distorted UVs
@@ -99,7 +103,12 @@ const timeLocation = gl.getUniformLocation(program, 'u_time');
 const imageLocation = gl.getUniformLocation(program, 'u_image');
 
 const image = new Image();
-image.src = './psychedelic1.png';
+image.src = "./psychedelic1.png"
+
+let rotation = 0;
+let rotationSpeed = 0.001; // Initial rotation speed
+let rotationAcceleration = 0.00001; // Acceleration factor
+
 image.onload = () => {
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -110,6 +119,14 @@ image.onload = () => {
 
     function render(time) {
         time *= 0.001; // Convert to seconds
+
+        // Update rotation with acceleration and randomization
+        rotationSpeed += rotationAcceleration;
+        rotation += rotationSpeed;
+
+        if (Math.random() < 0.01) {
+            rotationAcceleration = (Math.random() - 0.5) * 0.0001; // Randomize acceleration
+        }
 
         gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -129,6 +146,10 @@ image.onload = () => {
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.uniform1i(imageLocation, 0);
+
+        // Apply rotation to the canvas
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.uniform1f(gl.getUniformLocation(program, 'u_time'), time + rotation);
 
         gl.drawArrays(gl.TRIANGLES, 0, 6);
 
