@@ -12,8 +12,19 @@ attribute vec2 a_position;
 attribute vec2 a_texCoord;
 varying vec2 v_texCoord;
 
+uniform float u_rotation;
+
 void main() {
-    gl_Position = vec4(a_position, 0, 1);
+    // Apply rotation to the position
+    float cosRot = cos(u_rotation);
+    float sinRot = sin(u_rotation);
+    vec2 rotatedPosition = vec2(
+        a_position.x * cosRot - a_position.y * sinRot,
+        a_position.x * sinRot + a_position.y * cosRot
+    );
+
+    // Scale the position to zoom in
+    gl_Position = vec4(rotatedPosition * 1.5, 0, 1); // Scale by 1.5 for zoom
     v_texCoord = a_texCoord;
 }
 `;
@@ -29,9 +40,9 @@ varying vec2 v_texCoord;
 void main() {
     vec2 uv = v_texCoord;
 
-    // Add panning effect
-    uv.x += sin(u_time * 0.1) * 0.1; // Horizontal panning
-    uv.y += cos(u_time * 0.1) * 0.1; // Vertical panning
+    // Add more dramatic panning effect
+    uv.x += sin(u_time * 0.5) * 0.3; // Increased horizontal panning
+    uv.y += cos(u_time * 0.5) * 0.3; // Increased vertical panning
 
     // Distort UV coordinates with randomization
     float wave = sin(uv.y * 10.0 + u_time) * 0.02 + cos(uv.x * 15.0 + u_time * 0.5) * 0.01;
@@ -101,6 +112,7 @@ const texCoordLocation = gl.getAttribLocation(program, 'a_texCoord');
 const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
 const timeLocation = gl.getUniformLocation(program, 'u_time');
 const imageLocation = gl.getUniformLocation(program, 'u_image');
+const rotationLocation = gl.getUniformLocation(program, 'u_rotation');
 
 const image = new Image();
 image.src = "./psychedelic1.png"
@@ -108,6 +120,9 @@ image.src = "./psychedelic1.png"
 let rotation = 0;
 let rotationSpeed = 0.001; // Initial rotation speed
 let rotationAcceleration = 0.00001; // Acceleration factor
+
+let viewRotation = 0; // Initial rotation angle
+let viewRotationSpeed = 0.001; // Rotation speed
 
 image.onload = () => {
     const texture = gl.createTexture();
@@ -128,6 +143,9 @@ image.onload = () => {
             rotationAcceleration = (Math.random() - 0.5) * 0.0001; // Randomize acceleration
         }
 
+        // Update view rotation
+        viewRotation += viewRotationSpeed;
+
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         gl.useProgram(program);
@@ -142,6 +160,7 @@ image.onload = () => {
 
         gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
         gl.uniform1f(timeLocation, time);
+        gl.uniform1f(rotationLocation, viewRotation); // Pass rotation to the shader
 
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, texture);
