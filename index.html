@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drempels</title>
-    <link rel="stylesheet" href="drempels.css">
+    <title>Lucidia</title>
+    <link rel="stylesheet" href="lucidia.css">
     <style>
         body, html {
             margin: 0;
@@ -16,10 +16,52 @@
         canvas {
             display: block;
         }
+        #controlBar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.5s;
+        }
+        #controlBar.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #imageSelector {
+            color: white;
+            background: transparent;
+            border: 1px solid white;
+            padding: 5px;
+        }
+        #fullscreenButton {
+            color: white;
+            background: transparent;
+            border: 1px solid white;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-right: 20px; 
+        }
     </style>
 </head>
 <body>
-    <canvas id="drempelsCanvas"></canvas>
-    <script src="drempels.js"></script>
+    <div id="controlBar">
+        <select id="imageSelector">
+            <option value="0">Psychedelic 1</option>
+            <option value="1">Psychedelic 2</option>
+            <option value="2">Blue Dots</option>
+            <option value="3">Eyes</option>
+            <option value="4">Yellow Lines</option>
+        </select>
+        <button id="fullscreenButton">Fullscreen</button>
+    </div>
+    <canvas id="lucidiaCanvas"></canvas>
+    <script src="lucidia.js"></script>
 </body>
 </html>
