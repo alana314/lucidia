@@ -128,11 +128,12 @@ const nextImageLocation = gl.getUniformLocation(program, 'u_nextImage');
 const fadeProgressLocation = gl.getUniformLocation(program, 'u_fadeProgress');
 
 const images = [
-    "./psychedelic1a.png",
+    "./psychedelic.png",
     "./psychedelic2.png",
     "./bluedots.png",
     "./eyes.png",
     "./yellowlines.png",
+    "./vines.png",
 ];
 
 let currentImageIndex = 0;
